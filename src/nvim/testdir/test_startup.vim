@@ -331,10 +331,22 @@ func Test_q_arg()
 	\              "Xbadfile.c|4 col 12| error: expected ';' before '}' token"],
 	\             lines)
   endif
+  call delete('Xtestout')
 
   " Test with a non-existing error file (exits with value 3)
   let out = system(GetVimCommand() .. ' -q xyz.err')
   call assert_equal(3, v:shell_error)
+
+  " Test with piped input from stdin 'cat Xerrors | nvim -q /dev/stdin'.
+  call writefile(["Xbadfile.c:4:12: error: expected ';' before '}' token"], 'Xerrors')
+  if RunVimPiped([], after, '-q /dev/stdin', 'cat Xerrors | ')
+    let lines = readfile('Xtestout')
+    call assert_equal(['/dev/stdin',
+	\              '[0, 4, 12, 0]',
+	\              "Xbadfile.c|4 col 12| error: expected ';' before '}' token"],
+	\             lines)
+  endif
+  call delete('Xtestout')
 
   call delete('Xbadfile.c')
   call delete('Xtestout')

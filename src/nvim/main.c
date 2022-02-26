@@ -806,6 +806,7 @@ static bool edit_stdin(bool explicit, mparm_T *parmp)
                   && !embedded_mode
                   && (!exmode_active || parmp->input_neverscript)
                   && !parmp->input_isatty
+                  && parmp->edit_type != EDIT_QF
                   && scriptin[0] == NULL;  // `-s -` was not given.
   return explicit || implicit;
 }
